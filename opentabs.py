@@ -17,12 +17,12 @@ def display_downloads(url):
     browser.get(url)
     soup = BeautifulSoup(browser.page_source, 'html.parser')
 
-    links = filter(lambda a: 'docs.google.com' in a.attrs.get(
+    links = filter(lambda a: 'google.com' in a.attrs.get(
         'href', ''), soup.find_all('a'))
     links = map(lambda link: 'https://' +
                 re.findall(r'xurl=s://(.*)&', link.attrs['href']).pop(), links)
     links = list(links)
-
+    print(links)
     for link in links:
 
         browser.get(link)
@@ -30,6 +30,7 @@ def display_downloads(url):
         browser.find_element_by_xpath('//*[@id="uc-download-link"]').click()
         browser.implicitly_wait(300)
         sleep(300)
+
     return links
     # while True:
     #     sleep(1)
