@@ -20,13 +20,19 @@ def display_downloads(url):
     links = filter(lambda a: 'google.com' in a.attrs.get(
         'href', ''), soup.find_all('a'))
     links = map(lambda link: 'https://' +
-                re.findall(r'xurl=s://(.*)&', link.attrs['href']).pop(), links)
+                re.findall(r'xurl=s://([^&]+)', link.attrs['href']).pop(), links)
     links = list(links)
     print(links)
     for link in links:
 
-        browser.get(link)
+        if '/file/d' in link:
+            id_re = 'file/d/([^//]+)/'
+            print(link)
+            id = re.findall(id_re, link).pop()
+            link = f'https://drive.google.com/uc?id={id}&export=download'
 
+        print(link)
+        browser.get(link)
         browser.find_element_by_xpath('//*[@id="uc-download-link"]').click()
         browser.implicitly_wait(300)
         sleep(300)
