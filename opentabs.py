@@ -32,7 +32,6 @@ def display_downloads(url):
             lk = 'http'+params['xurl']
             clean_links.append(lk)
     links = list(clean_links)
-    #print(links)
     for link in links:
 
         if '/file/d' in link:
@@ -40,22 +39,25 @@ def display_downloads(url):
             print(link)
             id = re.findall(id_re, link).pop()
             link = f'https://drive.google.com/uc?id={id}&export=download'
-
-        print(link)
-        r = requests.get(links)
-        if r.status_code >= 400:
-            raise GameNotFound('Game not found in '+link)
-        browser.get(link)
-        browser.find_element_by_xpath('//*[@id="uc-download-link"]').click()
-        browser.implicitly_wait(300)
+            r = requests.get(link)
+            if r.status_code >= 400:
+                raise GameNotFound('Game not found in '+link)
+            browser.get(link)
+            browser.find_element_by_xpath('//*[@id="uc-download-link"]').click()
+            browser.implicitly_wait(300)
+        else:
+            print(link)
+            #r = requests.get(link)
+            #if r.status_code >= 400:
+            #raise GameNotFound('Game not found in '+link)
+            browser.get(link)
         sleep(300)
 
     return links
-    # while True:
-    #     sleep(1)
 
 
 if __name__ == '__main__':
     Fire(display_downloads)
 
 #display_downloads('https://igg-games.com/xcom-2-war-chosen-pc-game-166215494-cracked-free-download.html')
+#display_downloads('https://igg-games.com/cake-mania-main-street-free-813313222-download.html')
