@@ -7,6 +7,12 @@ from bs4 import BeautifulSoup
 from urllib.parse import urlsplit
 from selenium.webdriver.common.keys import Keys
 import re
+from furl import furl
+import requests
+
+
+class GameNotFound(Exception):
+    pass
 
 url = 'https://igg-games.com/port-182013070-royale-3-gold-free-download.html'
 
@@ -19,10 +25,14 @@ def display_downloads(url):
 
     links = filter(lambda a: 'google.com' in a.attrs.get(
         'href', ''), soup.find_all('a'))
-    links = map(lambda link: 'https://' +
-                re.findall(r'xurl=s://([^&]+)', link.attrs['href']).pop(), links)
-    links = list(links)
-    print(links)
+    clean_links = []
+    for link in links:
+        params = furl(link.attrs['href']).args
+        if 'xurl' in params:
+            lk = 'http'+params['xurl']
+            clean_links.append(lk)
+    links = list(clean_links)
+    #print(links)
     for link in links:
 
         if '/file/d' in link:
@@ -32,6 +42,9 @@ def display_downloads(url):
             link = f'https://drive.google.com/uc?id={id}&export=download'
 
         print(link)
+        r = requests.get(links)
+        if r.status_code >= 400:
+            raise GameNotFound('Game not found in '+link)
         browser.get(link)
         browser.find_element_by_xpath('//*[@id="uc-download-link"]').click()
         browser.implicitly_wait(300)
@@ -44,3 +57,5 @@ def display_downloads(url):
 
 if __name__ == '__main__':
     Fire(display_downloads)
+
+#display_downloads('https://igg-games.com/xcom-2-war-chosen-pc-game-166215494-cracked-free-download.html')
