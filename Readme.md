@@ -7,3 +7,9 @@ Use:
 ```bash
 python opentabs.py <url of the game>
 ```
+
+To only obtain the data url use:
+
+```bash
+python getlinks.py <url-of-the-game>
+```
